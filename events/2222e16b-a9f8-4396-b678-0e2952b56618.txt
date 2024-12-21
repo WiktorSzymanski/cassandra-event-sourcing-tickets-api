@@ -1,0 +1,1 @@
+ArenaPreparedEvent | {"id":"fd10ecac-09d1-4901-8d9e-07b0e2d9f398","numberOfRows":10,"numberOfSeats":10}
