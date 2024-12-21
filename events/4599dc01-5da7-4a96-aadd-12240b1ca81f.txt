@@ -1,4 +1,0 @@
-ArenaPreparedEvent | {"id":"ac38bbfe-6f49-4070-ab86-6751e327c8f5","numberOfRows":10,"numberOfSeats":10}
-SeatReservedEvent | {"id":"f2ed46f0-08d8-4b70-80c7-15c348085c70","row":5,"seat":9,"username":"John Doe"}
-SeatReleasedEvent | {"id":"b59a7f02-cdb6-4a58-b8eb-620136d224af","row":5,"seat":9}
-SeatReservedEvent | {"id":"a615fc92-3708-4e8f-92b2-6224bb70941a","row":5,"seat":5,"username":"Ben Dover"}

@@ -38,3 +38,6 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### FileEventStore ###
+.event-store

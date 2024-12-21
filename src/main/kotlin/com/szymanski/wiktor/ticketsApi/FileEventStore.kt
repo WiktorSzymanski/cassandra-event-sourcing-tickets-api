@@ -6,7 +6,7 @@ import java.util.UUID
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 
-class FileEventStore(private val directory: String) {
+class FileEventStore(private val directory: String) : EventStore {
     val objectMapper = jacksonObjectMapper()
 
     init {
@@ -16,19 +16,19 @@ class FileEventStore(private val directory: String) {
         }
     }
 
-    fun saveEvent(id: UUID, event: ArenaDomainEvent) {
-        val file = File("$directory/${id}.txt")
+    override fun saveEvent(arenaId: UUID, event: ArenaDomainEvent) {
+        val file = File("$directory/${arenaId}.txt")
         if (!file.exists()) { file.createNewFile() }
         try {
             file.appendText("${mapEventType(event)} | ${serializeEvent(event)}\n")
-            println("Event saved for arena: $id")
+            println("Event saved for arena: $arenaId")
         } catch (e: IOException) {
             println("Error saving event: ${e.message}")
         }
     }
 
-    fun loadEvents(id: UUID): List<ArenaDomainEvent> {
-        val file = File("$directory/$id.txt")
+    override fun loadEvents(arenaId: UUID): List<ArenaDomainEvent> {
+        val file = File("$directory/$arenaId.txt")
         if (!file.exists()) { file.createNewFile() }
         val events = mutableListOf<ArenaDomainEvent>()
 
@@ -73,7 +73,7 @@ fun main() {
 
     val arenaId = UUID.randomUUID()
 
-    val repo = ArenaRepo(FileEventStore("./events"))
+    val repo = ArenaRepo(FileEventStore("./.event-store"))
 
     repo.apply(arenaId, ArenaPreparedEvent(UUID.randomUUID(), 10, 10))
     repo.apply(arenaId, SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 9, username = "John Doe"))

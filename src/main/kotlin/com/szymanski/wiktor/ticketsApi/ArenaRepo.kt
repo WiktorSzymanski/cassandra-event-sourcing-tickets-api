@@ -3,7 +3,7 @@ package com.szymanski.wiktor.ticketsApi
 import java.util.*
 
 class ArenaRepo(
-    private val eventStore: FileEventStore
+    private val eventStore: EventStore
 ) {
     fun load(id: UUID): Arena {
         val events: List<ArenaDomainEvent> = eventStore.loadEvents(id)
