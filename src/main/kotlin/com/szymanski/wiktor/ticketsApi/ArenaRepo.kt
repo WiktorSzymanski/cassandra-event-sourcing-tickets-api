@@ -1,7 +1,9 @@
 package com.szymanski.wiktor.ticketsApi
 
+import org.springframework.stereotype.Service
 import java.util.*
 
+@Service
 class ArenaRepo(
     private val eventStore: EventStore
 ) {

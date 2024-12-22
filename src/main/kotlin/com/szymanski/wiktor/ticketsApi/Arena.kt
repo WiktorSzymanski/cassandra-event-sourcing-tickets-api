@@ -1,7 +1,7 @@
 package com.szymanski.wiktor.ticketsApi
 
 class Arena {
-    private lateinit var seats: Array<Array<String?>>
+    lateinit var seats: Array<Array<String?>>
 
     fun apply(event: ArenaDomainEvent): Unit = when (event) {
         is ArenaPreparedEvent -> prepareArena(event)
@@ -39,7 +39,7 @@ class Arena {
     }
 
     private fun isSeatValid(row: Int, seat: Int): Unit {
-        if (row !in 1..seats.size || seat !in 1..seats[row - 1].size) {
+        if (row !in 0..seats.size || seat !in 0..seats[row].size) {
             throw InvalidSeatException(row, seat)
         }
     }
