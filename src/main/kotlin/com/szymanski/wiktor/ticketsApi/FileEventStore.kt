@@ -69,26 +69,26 @@ class FileEventStore(private val directory: String) : EventStore {
     }
 }
 
-fun main() {
-
-    val arenaId = UUID.randomUUID()
-
-    val repo = ArenaRepo(FileEventStore("./.event-store"))
-
-    repo.apply(arenaId, ArenaPreparedEvent(UUID.randomUUID(), 10, 10))
-    repo.apply(arenaId, SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 9, username = "John Doe"))
-    repo.apply(arenaId, SeatReleasedEvent(UUID.randomUUID(), row = 5, seat = 9))
-    repo.apply(arenaId, SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 5, username = "Ben Dover"))
-
-
-    val arena = Arena()
-    arena.apply(ArenaPreparedEvent(UUID.randomUUID(), 10, 10))
-    arena.apply(SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 9, username = "John Doe"))
-    arena.apply(SeatReleasedEvent(UUID.randomUUID(), row = 5, seat = 9))
-    arena.apply(SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 5, username = "Ben Dover"))
-
-    val loaded = repo.load(arenaId)
-    if (loaded.equals(arena))
-        println("Loaded and deserialized data are equal")
-    else println("Loaded and deserialized data are not equal")
-}
+//fun main() {
+//
+//    val arenaId = UUID.randomUUID()
+//
+//    val repo = ArenaRepo(FileEventStore("./.event-store"))
+//
+//    repo.apply(arenaId, ArenaPreparedEvent(UUID.randomUUID(), 10, 10))
+//    repo.apply(arenaId, SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 9, username = "John Doe"))
+//    repo.apply(arenaId, SeatReleasedEvent(UUID.randomUUID(), row = 5, seat = 9))
+//    repo.apply(arenaId, SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 5, username = "Ben Dover"))
+//
+//
+//    val arena = Arena()
+//    arena.apply(ArenaPreparedEvent(UUID.randomUUID(), 10, 10))
+//    arena.apply(SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 9, username = "John Doe"))
+//    arena.apply(SeatReleasedEvent(UUID.randomUUID(), row = 5, seat = 9))
+//    arena.apply(SeatReservedEvent(UUID.randomUUID(), row = 5, seat = 5, username = "Ben Dover"))
+//
+//    val loaded = repo.load(arenaId)
+//    if (loaded.equals(arena))
+//        println("Loaded and deserialized data are equal")
+//    else println("Loaded and deserialized data are not equal")
+//}

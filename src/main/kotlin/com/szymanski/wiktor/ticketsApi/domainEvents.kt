@@ -2,23 +2,46 @@ package com.szymanski.wiktor.ticketsApi
 
 import java.util.UUID
 
-open class ArenaDomainEvent(id: UUID)
+sealed interface ArenaDomainEvent {
+    val id: UUID
+    val version: Int
+}
+
+sealed interface ArenaCompensationEvent : ArenaDomainEvent {
+    val compensatesEventId: UUID
+}
 
 data class ArenaPreparedEvent(
-    val id: UUID,
+    override val id: UUID,
+    override val version: Int,
     val numberOfRows: Int,
     val numberOfSeats: Int
-) : ArenaDomainEvent(id)
+) : ArenaDomainEvent
 
 class SeatReservedEvent(
-    val id: UUID,
+    override val id: UUID,
+    override val version: Int,
     val row: Int,
     val seat: Int,
     val username: String
-) : ArenaDomainEvent(id)
+) : ArenaDomainEvent
 
 class SeatReleasedEvent(
-    val id: UUID,
+    override val id: UUID,
+    override val version: Int,
     val row: Int,
-    val seat: Int
-) : ArenaDomainEvent(id)
+    val seat: Int,
+    val username: String
+) : ArenaDomainEvent
+
+class SeatReservedCompensationEvent(
+    override val id: UUID,
+    override val version: Int,
+    override val compensatesEventId: UUID,
+) : ArenaCompensationEvent
+
+class SeatReleasedCompensationEvent(
+    override val id: UUID,
+    override val version: Int,
+    override val compensatesEventId: UUID,
+) : ArenaCompensationEvent
