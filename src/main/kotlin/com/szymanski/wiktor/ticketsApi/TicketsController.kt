@@ -54,16 +54,16 @@ class TicketsController(
         val columns = seats[0].size
         val builder = StringBuilder()
 
-        builder.append("   ")
-        for (col in 1..columns) {
-            builder.append(" $col ")
+        builder.append("\t")
+        for (col in 0 until columns) {
+            builder.append(" $col\t")
         }
         builder.append("\n")
 
         for (row in 0 until rows) {
-            builder.append("${row + 1} ")
+            builder.append("$row\t")
             for (col in 0 until columns) {
-                builder.append(if (seats[row][col].username != null) " [X] " else " [ ] ")
+                builder.append(if (seats[row][col].username != null) " X\t" else "[ ]\t")
             }
             builder.append("\n")
         }

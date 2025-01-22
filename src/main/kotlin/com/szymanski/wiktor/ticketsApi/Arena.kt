@@ -4,7 +4,7 @@ import java.util.*
 
 class Arena {
     lateinit var seats: Array<Array<Seat>>
-    lateinit var eventToCompensate: MutableList<ArenaDomainEvent>
+    var eventToCompensate: MutableList<ArenaDomainEvent> = mutableListOf()
 
     var version: Int = 0
 
@@ -36,7 +36,6 @@ class Arena {
 
     private fun prepareArena(event: ArenaPreparedEvent): Unit {
         this.seats = Array(event.numberOfRows) { Array(event.numberOfSeats) { Seat(null, 0) } }
-        this.eventToCompensate = mutableListOf()
         this.version = event.version
     }
 
