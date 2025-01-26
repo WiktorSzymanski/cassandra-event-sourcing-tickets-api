@@ -1,46 +1,101 @@
 package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 
-import com.google.gson.Gson
-import org.json.JSONArray
-import org.json.JSONObject
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 
 class CassandraEventSourcingTicketsApiApplicationTests {
+
+    private val utils = Utils()
 
     @Test
     fun createConcert() {
         val api = TicketsAPI.create("http://localhost:8080")
         var response = api.getConcerts().execute()
 
-        assert(response.isSuccessful)
+        utils.checkValidity(response)
 
-        val json = JSONArray(response.body()!!.string())
-        val length = json.length()
+        val concerts = utils.getJsonArray(response)
+        val length = concerts.length()
 
-        response = api.createConcert("abc", 1, 1).execute()
-
-        assert(response.isSuccessful)
+        response = api.createConcert(utils.generateEventName(), (10..1000).random(), (5..70).random()).execute()
+        utils.checkValidity(response)
 
         val id = response.body()!!.string()
 
         response = api.getConcerts().execute()
+        utils.checkValidity(response)
 
-        val json2 = JSONArray(response.body()!!.string())
-        val length2 = json2.length()
+        val concerts2 = utils.getJsonArray(response)
+        val length2 = concerts2.length()
 
         assert(length2 > length)
-
-        var containsId = false
-        for (i in 0 until length2){
-            val obj = json2.getJSONObject(i)
-            if (obj.has("id") and obj.getString("id").equals(id)){
-                containsId = true
-            }
-        }
-
-        assert(containsId)
+        assert(utils.containsValue(concerts2, "id", id))
     }
 
+    @Test
+    fun reserveSeat(){
+        val api = TicketsAPI.create("http://localhost:8080")
+
+        var response = api.getConcerts().execute()
+        utils.checkValidity(response)
+
+        val concerts = utils.getJsonArray(response)
+        if (concerts.length() == 0)
+            return
+
+        val concertObj = concerts.getJSONObject((0..<concerts.length()).random())
+        val concertId = concertObj.getString("id")
+
+        response = api.getSeats(concertId).execute()
+        utils.checkValidity(response)
+
+        val seats = utils.getJsonArray(response)
+        val seatObj = seats.getJSONObject((0..<seats.length()).random())
+        val row = seatObj.getInt("row")
+        val seat = seatObj.getInt("seat")
+        val username = utils.generateUsername()
+
+        response = api.reserveSeat(concertId, row, seat, username).execute()
+        utils.checkValidity(response)
+        val reservationId = response.body()!!.string()
+
+        response = api.getUsersReservations(username).execute()
+        utils.checkValidity(response)
+        assert(utils.containsValue(utils.getJsonArray(response), "id", reservationId))
+
+        response = api.getSeats(concertId).execute()
+        utils.checkValidity(response)
+        assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
+    }
+
+    @Test
+    fun releaseSeat(){
+        val api = TicketsAPI.create("http://localhost:8080")
+
+        val username = utils.generateUsername()
+
+        var response = api.getUsersReservations(username).execute() //TODO - dodac taki endpoint
+        utils.checkValidity(response)
+
+        val reservations = utils.getJsonArray(response)
+        if (reservations.length() == 0)
+            return
+
+        val reservationObj = reservations.getJSONObject((0..<reservations.length()).random())
+        val concertId = reservationObj.getString("concert_id")
+        val row = reservationObj.getInt("row")
+        val seat = reservationObj.getInt("seat")
+        val reservationId = reservationObj.getInt("id")
+
+        response = api.releaseSeat(concertId, row, seat, username).execute()
+        utils.checkValidity(response)
+
+        response = api.getUsersReservations(username).execute()
+        utils.checkValidity(response)
+        assert(!utils.containsValue(utils.getJsonArray(response), "reservation_id", reservationId))
+
+        response = api.getSeats(concertId).execute()
+        utils.checkValidity(response)
+        assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
+    }
 
 }
