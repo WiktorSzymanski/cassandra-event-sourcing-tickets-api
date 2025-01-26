@@ -4,6 +4,8 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 
@@ -18,14 +20,23 @@ interface TicketsAPI {
     @GET("/concert/{id}/seats")
     fun getSeats(): Call<ResponseBody>
 
-    @POST("/concert/{id}/seats/reserve")
-    fun reserveSeat(): Call<ResponseBody>
+    @POST("/concerts")
+    fun createConcert(@Field("name") name : String,
+                    @Field("rows") rows : Int,
+                    @Field("seats") seats : Int
+    ): Call<ResponseBody>
 
     @POST("/concert/{id}/seats/release")
-    fun releaseSeat(): Call<ResponseBody>
+    fun releaseSeat(@Field("id") id : String,
+                    @Field("row") row : Int,
+                    @Field("seat") seat : Int,
+                    @Field("username") username : String): Call<ResponseBody>
 
-    @POST("/concerts")
-    fun createConcert(): Call<ResponseBody>
+    @POST("/concert/{id}/seats/reserve")
+    fun reserveSeat(@Field("id") id : String,
+                    @Field("row") row : Int,
+                    @Field("seat") seat : Int,
+                    @Field("username") username : String): Call<ResponseBody>
 
     companion object {
         fun create(baseUrl: String): TicketsAPI {
