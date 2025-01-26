@@ -14,24 +14,29 @@ interface TicketsAPI {
     @GET("/concerts")
     fun getConcerts(): Call<ResponseBody>
 
+    @FormUrlEncoded
     @GET("/concert/{id}")
-    fun getConcert(): Call<ResponseBody>
+    fun getConcert(@Field("id") id : String): Call<ResponseBody>
 
+    @FormUrlEncoded
     @GET("/concert/{id}/seats")
-    fun getSeats(): Call<ResponseBody>
+    fun getSeats(@Field("id") id : String): Call<ResponseBody>
 
+    @FormUrlEncoded
     @POST("/concerts")
     fun createConcert(@Field("name") name : String,
                     @Field("rows") rows : Int,
                     @Field("seats") seats : Int
     ): Call<ResponseBody>
 
+    @FormUrlEncoded
     @POST("/concert/{id}/seats/release")
     fun releaseSeat(@Field("id") id : String,
                     @Field("row") row : Int,
                     @Field("seat") seat : Int,
                     @Field("username") username : String): Call<ResponseBody>
 
+    @FormUrlEncoded
     @POST("/concert/{id}/seats/reserve")
     fun reserveSeat(@Field("id") id : String,
                     @Field("row") row : Int,
