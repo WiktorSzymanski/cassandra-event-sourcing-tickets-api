@@ -9,26 +9,15 @@ class CassandraEventSourcingTicketsApiApplicationTests {
     @Test
     fun createConcert() {
         val api = TicketsAPI.create("http://localhost:8080")
-        var response = api.getConcerts().execute()
 
+        var response = api.createConcert(utils.generateEventName(), (10..1000).random(), (5..70).random()).execute()
         utils.checkValidity(response)
 
-        val concerts = utils.getJsonArray(response)
-        val length = concerts.length()
-
-        response = api.createConcert(utils.generateEventName(), (10..1000).random(), (5..70).random()).execute()
-        utils.checkValidity(response)
-
-        val id = response.body()!!.string()
+        val concertId = response.body()!!.string()
 
         response = api.getConcerts().execute()
         utils.checkValidity(response)
-
-        val concerts2 = utils.getJsonArray(response)
-        val length2 = concerts2.length()
-
-        assert(length2 > length)
-        assert(utils.containsValue(concerts2, "id", id))
+        assert(utils.containsValue(utils.getJsonArray(response), "id", concertId))
     }
 
     @Test
