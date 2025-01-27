@@ -7,7 +7,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     private val utils = Utils()
 
-    private val apiAddr : String;
+    private val apiAddr : String
     private val api : TicketsAPI
 
     init{
@@ -104,10 +104,10 @@ fun main(args : Array<String>){
     if (args.size < 5){
         println("Wrong number of arguments!")
         println("Needed arguments in order: apiAddress numberOfEventsToCreate numberOfSeatReservations numberOfSeatReleases" )
-        return;
+        return
     }
 
-    runBlocking<Unit> {
+    runBlocking {
         val tst = CassandraEventSourcingTicketsApiApplicationTests(args[1])
         val createJobs = List(args[2].toInt()) {
             launch {
