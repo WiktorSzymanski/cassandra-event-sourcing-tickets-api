@@ -2,18 +2,20 @@ package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
 
-class CassandraEventSourcingTicketsApiApplicationTests {
+class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     private val utils = Utils()
 
-    private val apiAddr = "http://localhost:8080"
+    private val apiAddr : String;
+    private val api : TicketsAPI
 
-    @Test
+    init{
+        this.apiAddr = addr
+        this.api = TicketsAPI.create(apiAddr)
+    }
+
     fun createConcert() {
-        val api = TicketsAPI.create(apiAddr)
-
         var response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute()
         utils.checkValidity(response)
 
@@ -24,10 +26,7 @@ class CassandraEventSourcingTicketsApiApplicationTests {
         assert(utils.containsValue(utils.getJsonArray(response), "id", concertId))
     }
 
-    @Test
     fun reserveSeat(){
-        val api = TicketsAPI.create(apiAddr)
-
         var response = api.getConcerts().execute()
         utils.checkValidity(response)
 
@@ -63,10 +62,7 @@ class CassandraEventSourcingTicketsApiApplicationTests {
         assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
     }
 
-    @Test
     fun releaseSeat(){
-        val api = TicketsAPI.create(apiAddr)
-
         var response = api.getConcerts().execute()
         utils.checkValidity(response)
 
@@ -101,32 +97,38 @@ class CassandraEventSourcingTicketsApiApplicationTests {
         utils.checkValidity(response)
         assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
     }
+}
 
-    @Test
-    fun stressTest(){
-        runBlocking<Unit> {
-            val createJobs = List(2) {
-                launch {
-                    createConcert()
-                }
-            }
+fun main(args : Array<String>){
 
-            val reserveJobs = List(5000) {
-                launch {
-                    reserveSeat()
-                }
-            }
-
-            val releaseJobs = List(1000) {
-                launch {
-                    releaseSeat()
-                }
-            }
-
-            reserveJobs.forEach { it.join() }
-            releaseJobs.forEach { it.join() }
-            createJobs.forEach { it.join() }
-        }
+    if (args.size < 5){
+        println("Wrong number of arguments!")
+        println("Needed arguments in order: apiAddress numberOfEventsToCreate numberOfSeatReservations numberOfSeatReleases" )
+        return;
     }
 
+    runBlocking<Unit> {
+        val tst = CassandraEventSourcingTicketsApiApplicationTests(args[1])
+        val createJobs = List(args[2].toInt()) {
+            launch {
+                tst.createConcert()
+            }
+        }
+
+        val reserveJobs = List(args[3].toInt()) {
+            launch {
+                tst.reserveSeat()
+            }
+        }
+
+        val releaseJobs = List(args[4].toInt()) {
+            launch {
+                tst.releaseSeat()
+            }
+        }
+
+        reserveJobs.forEach { it.join() }
+        releaseJobs.forEach { it.join() }
+        createJobs.forEach { it.join() }
+    }
 }
