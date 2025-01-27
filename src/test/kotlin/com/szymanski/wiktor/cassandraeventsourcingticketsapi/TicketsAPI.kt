@@ -29,14 +29,14 @@ interface TicketsAPI {
 
     @FormUrlEncoded
     @POST("/concert/{id}/seats/release")
-    fun releaseSeat(@Field("id") id : String,
+    fun releaseSeat(@Path("id") id : String,
                     @Field("row") row : Int,
                     @Field("seat") seat : Int,
                     @Field("username") username : String): Call<ResponseBody>
 
     @FormUrlEncoded
     @POST("/concert/{id}/seats/reserve")
-    fun reserveSeat(@Field("id") id : String,
+    fun reserveSeat(@Path("id") id : String,
                     @Field("row") row : Int,
                     @Field("seat") seat : Int,
                     @Field("username") username : String): Call<ResponseBody>
