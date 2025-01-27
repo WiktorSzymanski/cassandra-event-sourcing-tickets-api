@@ -8,13 +8,14 @@ class ArenaRepo(
     private val eventStore: EventStore
 ) {
     fun load(id: UUID): Arena {
-        val events: List<ArenaDomainEvent> = eventStore.loadEvents(id)
-        val arena = Arena()
+        val (arena, timestamp) = eventStore.getArenaSnapshot(id)
+        val events: List<ArenaDomainEvent> = if (timestamp == "") eventStore.loadEvents(id) else eventStore.loadEventsFromTimestamp(id, timestamp)
         events.forEach(arena::apply)
         arena.eventToCompensate.toList().forEach {
             val compensationEvent = arena.compensate(it)
             eventStore.saveEvent(id, compensationEvent)
         }
+        if (events.size > 10) eventStore.saveEvent(id, arena.snapshot()).let { eventStore.createSnapshot(id, it) }
         return arena
     }
 

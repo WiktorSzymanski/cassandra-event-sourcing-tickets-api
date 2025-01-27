@@ -9,7 +9,7 @@ import java.util.UUID
 @Table("arena_event_store")
 data class ArenaEventEntity (
     @PrimaryKeyColumn(name = "arena_id", type = PrimaryKeyType.PARTITIONED) val arenaId: UUID,
-    @PrimaryKeyColumn(name = "time_stamp", type = PrimaryKeyType.CLUSTERED) val timeStamp: String,
-    @Column("event_type") val event_type: String,
-    @Column("event_data") val event_data: String
+    @PrimaryKeyColumn(name = "timestamp", type = PrimaryKeyType.CLUSTERED) val timestamp: String,
+    @Column("eventtype") val eventType: String,
+    @Column("eventdata") val eventData: String
 )

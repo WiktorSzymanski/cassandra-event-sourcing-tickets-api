@@ -3,10 +3,15 @@ package com.szymanski.wiktor.ticketsApi
 import java.util.*
 
 class Arena {
-    lateinit var seats: Array<Array<Seat>>
+    var seats: Array<Array<Seat>> = arrayOf()
     var eventToCompensate: MutableList<ArenaDomainEvent> = mutableListOf()
 
     var version: Int = 0
+
+    constructor()
+    constructor(seats: Array<Array<Seat>>) {
+        this.seats = seats
+    }
 
     fun apply(event: ArenaDomainEvent): ArenaDomainEvent  {
         when (event) {
@@ -15,6 +20,7 @@ class Arena {
             is SeatReleasedEvent -> releaseSeat(event)
             is SeatReservedCompensationEvent -> compensateSeat(event)
             is SeatReleasedCompensationEvent -> compensateSeat(event)
+            is SnapshotEvent -> snapshotProcedure(event)
         }
         this.version = event.version
         return event
@@ -32,6 +38,14 @@ class Arena {
             }
             else -> throw UnsupportedOperationException()
         }
+    }
+
+    fun snapshot(): ArenaDomainEvent {
+        return this.apply(SnapshotEvent(UUID.randomUUID(), this.version + 1, UUID.randomUUID()))
+    }
+
+    private fun snapshotProcedure(event: SnapshotEvent) {
+        println("Snapshot event with snapshot id ${event.snapshotId} created")
     }
 
     private fun prepareArena(event: ArenaPreparedEvent): Unit {
