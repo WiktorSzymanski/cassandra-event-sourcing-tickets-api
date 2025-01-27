@@ -26,7 +26,6 @@ class TicketsController(
         return concertService.getConcertById(id)
     }
 
-
     @PostMapping("/concerts")
     fun createConcert(@RequestParam("name") name: String, @RequestParam("rows") rows: Int, @RequestParam("seats") seats: Int): String {
         val concert = concertService.createConcert(name)
@@ -34,9 +33,13 @@ class TicketsController(
         return concert.id
     }
 
-    @GetMapping("/concert/{id}/seats")
-    fun getConcertSeats(@PathVariable("id") id: UUID): String = constructArenaString2(arenaRepo.load(concertService.getConcertById(id).arena_id).seats)
+    @GetMapping("/concert/{id}/free_seats")
+    fun getConcertSeats(@PathVariable("id") id: UUID): String = getFreeSeats(arenaRepo.load(concertService.getConcertById(id).arena_id).seats)
 
+    @GetMapping("/concert/{id}/my_seats/{username}")
+    fun getReservedSeats(@PathVariable("id") id: UUID, @PathVariable("username") username: String): String {
+        return getSeatsReservedBy(arenaRepo.load(concertService.getConcertById(id).arena_id).seats, username)
+    }
 
     @PostMapping("/concert/{id}/seats/reserve")
     fun reserveSeat(@PathVariable("id") id: UUID, @RequestParam("row") row: Int, @RequestParam("seat") seat: Int,  @RequestParam("username") username: String): Boolean {
@@ -51,28 +54,26 @@ class TicketsController(
         return true
     }
 
-    fun constructArenaString(seats: Array<Array<Seat>>): String {
+    fun getSeatsReservedBy(seats: Array<Array<Seat>>, username : String): String {
         val rows = seats.size
         val columns = seats[0].size
-        val builder = StringBuilder()
 
-        builder.append("\t")
-        for (col in 0 until columns) {
-            builder.append(" $col\t")
-        }
-        builder.append("\n")
+        val seatsArr = JsonArray()
 
         for (row in 0 until rows) {
-            builder.append("$row\t")
             for (col in 0 until columns) {
-                builder.append(if (seats[row][col].username != null) " X\t" else "[ ]\t")
+                if (seats[row][col].username == username) {
+                    val json = JsonObject()
+                    json.addProperty("row", row)
+                    json.addProperty("seat", col)
+                    seatsArr.add(json)
+                }
             }
-            builder.append("\n")
         }
-        return builder.toString()
+        return seatsArr.toString()
     }
 
-    fun constructArenaString2(seats: Array<Array<Seat>>): String {
+    fun getFreeSeats(seats: Array<Array<Seat>>): String {
         val rows = seats.size
         val columns = seats[0].size
 

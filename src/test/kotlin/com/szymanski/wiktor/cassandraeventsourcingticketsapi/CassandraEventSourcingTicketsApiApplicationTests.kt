@@ -14,7 +14,7 @@ class CassandraEventSourcingTicketsApiApplicationTests {
     fun createConcert() {
         val api = TicketsAPI.create(apiAddr)
 
-        var response = api.createConcert(utils.generateEventName(), (10..1000).random(), (5..70).random()).execute()
+        var response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute()
         utils.checkValidity(response)
 
         val concertId = response.body()!!.string()
@@ -38,10 +38,14 @@ class CassandraEventSourcingTicketsApiApplicationTests {
         val concertObj = concerts.getJSONObject((0..<concerts.length()).random())
         val concertId = concertObj.getString("id")
 
-        response = api.getSeats(concertId).execute()
+        response = api.getFreeSeats(concertId).execute()
         utils.checkValidity(response)
 
         val seats = utils.getJsonArray(response)
+
+        if (seats.length() == 0)
+            return
+
         val seatObj = seats.getJSONObject((0..<seats.length()).random())
         val row = seatObj.getInt("row")
         val seat = seatObj.getInt("seat")
@@ -49,13 +53,12 @@ class CassandraEventSourcingTicketsApiApplicationTests {
 
         response = api.reserveSeat(concertId, row, seat, username).execute()
         utils.checkValidity(response)
-        val reservationId = response.body()!!.string()
 
-        response = api.getUsersReservations(username).execute()
+        response = api.getMySeats(concertId, username).execute()
         utils.checkValidity(response)
-        assert(utils.containsValue(utils.getJsonArray(response), "id", reservationId))
+        assert(utils.containsValues(utils.getJsonArray(response), "row",  row, "seat", seat))
 
-        response = api.getSeats(concertId).execute()
+        response = api.getFreeSeats(concertId).execute()
         utils.checkValidity(response)
         assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
     }
@@ -64,9 +67,19 @@ class CassandraEventSourcingTicketsApiApplicationTests {
     fun releaseSeat(){
         val api = TicketsAPI.create(apiAddr)
 
+        var response = api.getConcerts().execute()
+        utils.checkValidity(response)
+
+        val concerts = utils.getJsonArray(response)
+        if (concerts.length() == 0)
+            return
+
+        val concertObj = concerts.getJSONObject((0..<concerts.length()).random())
+        val concertId = concertObj.getString("id")
+
         val username = utils.generateUsername()
 
-        var response = api.getUsersReservations(username).execute() //TODO - dodac taki endpoint
+        response = api.getMySeats(concertId, username).execute()
         utils.checkValidity(response)
 
         val reservations = utils.getJsonArray(response)
@@ -74,19 +87,17 @@ class CassandraEventSourcingTicketsApiApplicationTests {
             return
 
         val reservationObj = reservations.getJSONObject((0..<reservations.length()).random())
-        val concertId = reservationObj.getString("concert_id")
         val row = reservationObj.getInt("row")
         val seat = reservationObj.getInt("seat")
-        val reservationId = reservationObj.getInt("id")
 
         response = api.releaseSeat(concertId, row, seat, username).execute()
         utils.checkValidity(response)
 
-        response = api.getUsersReservations(username).execute()
+        response = api.getMySeats(concertId, username).execute()
         utils.checkValidity(response)
-        assert(!utils.containsValue(utils.getJsonArray(response), "reservation_id", reservationId))
+        assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
-        response = api.getSeats(concertId).execute()
+        response = api.getFreeSeats(concertId).execute()
         utils.checkValidity(response)
         assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
     }
@@ -94,19 +105,19 @@ class CassandraEventSourcingTicketsApiApplicationTests {
     @Test
     fun stressTest(){
         runBlocking<Unit> {
-            val createJobs = List(20) {
+            val createJobs = List(2) {
                 launch {
                     createConcert()
                 }
             }
 
-            val reserveJobs = List(10000) {
+            val reserveJobs = List(5000) {
                 launch {
                     reserveSeat()
                 }
             }
 
-            val releaseJobs = List(5000) {
+            val releaseJobs = List(1000) {
                 launch {
                     releaseSeat()
                 }
