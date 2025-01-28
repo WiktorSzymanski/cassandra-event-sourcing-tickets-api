@@ -2,6 +2,8 @@ package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.lang.Thread.sleep
 import kotlin.time.measureTime
 
@@ -13,12 +15,15 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     fun createConcert() {
         val timeTaken = measureTime {
-            var response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute()
+            var response : Response<ResponseBody>
+
+            println("Create concert call ${measureTime { response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute() }}")
+
             utils.checkValidity(response)
 
             val concertId = response.body()!!.string()
 
-            response = api.getConcerts().execute()
+            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
             utils.checkValidity(response)
             assert(utils.containsValue(utils.getJsonArray(response), "id", concertId))
         }
@@ -28,7 +33,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     fun reserveSeat(){
         val timeTaken = measureTime {
-            var response = api.getConcerts().execute()
+            var response : Response<ResponseBody>
+
+            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
             utils.checkValidity(response)
 
             val concerts = utils.getJsonArray(response)
@@ -38,7 +45,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val concertObj = concerts.getJSONObject((0..<concerts.length()).random())
             val concertId = concertObj.getString("id")
 
-            response = api.getFreeSeats(concertId).execute()
+            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
             utils.checkValidity(response)
 
             val seats = utils.getJsonArray(response)
@@ -51,14 +58,14 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val seat = seatObj.getInt("seat")
             val username = utils.generateUsername()
 
-            response = api.reserveSeat(concertId, row, seat, username).execute()
+            println("Reserve seat call ${measureTime { response = api.reserveSeat(concertId, row, seat, username).execute() }}")
             utils.checkValidity(response)
 
-            response = api.getMySeats(concertId, username).execute()
+            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
             utils.checkValidity(response)
             assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
-            response = api.getFreeSeats(concertId).execute()
+            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
             utils.checkValidity(response)
             assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
         }
@@ -68,7 +75,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     fun releaseSeat(){
         val timeTaken = measureTime {
-            var response = api.getConcerts().execute()
+            var response : Response<ResponseBody>
+
+            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
             utils.checkValidity(response)
 
             val concerts = utils.getJsonArray(response)
@@ -80,7 +89,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
             val username = utils.generateUsername()
 
-            response = api.getMySeats(concertId, username).execute()
+            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
             utils.checkValidity(response)
 
             val reservations = utils.getJsonArray(response)
@@ -91,14 +100,14 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val row = reservationObj.getInt("row")
             val seat = reservationObj.getInt("seat")
 
-            response = api.releaseSeat(concertId, row, seat, username).execute()
+            println("Release seat call ${measureTime { response = api.releaseSeat(concertId, row, seat, username).execute() }}")
             utils.checkValidity(response)
 
-            response = api.getMySeats(concertId, username).execute()
+            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
             utils.checkValidity(response)
             assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
-            response = api.getFreeSeats(concertId).execute()
+            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
             utils.checkValidity(response)
             assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
         }
@@ -152,5 +161,5 @@ fun main(args : Array<String>){
         }
     }
 
-    println("Operation took ${timeTaken}")
+    println("Whole operation took ${timeTaken}")
 }
