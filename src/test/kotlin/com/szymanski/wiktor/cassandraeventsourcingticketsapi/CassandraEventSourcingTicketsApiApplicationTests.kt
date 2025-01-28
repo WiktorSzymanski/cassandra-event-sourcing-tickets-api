@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.lang.Thread.sleep
+import kotlin.time.Duration
 import kotlin.time.measureTime
 
 class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
@@ -12,18 +13,38 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
     private val utils = Utils()
     private val apiAddr : String = addr
     private val api : TicketsAPI = TicketsAPI.create(apiAddr)
+    private val releaseTimes : MutableList<Long> = mutableListOf()
+    private val reserveTimes : MutableList<Long> = mutableListOf()
+    private val createTimes : MutableList<Long> = mutableListOf()
+    private val getConcertTimes : MutableList<Long> = mutableListOf()
+    private val getFreeSeatsTimes : MutableList<Long> = mutableListOf()
+    private val getMySeatsTimes : MutableList<Long> = mutableListOf()
+
+    fun printStats(){
+        println("Get my seats avg ${getMySeatsTimes.average()}")
+        println("Get free seats avg ${getFreeSeatsTimes.average()}")
+        println("Get concert avg ${getConcertTimes.average()}")
+        println("Create concert times avg ${createTimes.average()}")
+        println("Release a seat avg ${releaseTimes.average()}")
+        println("Reserve a seat avg ${reserveTimes.average()}")
+    }
 
     fun createConcert() {
         val timeTaken = measureTime {
             var response : Response<ResponseBody>
 
-            println("Create concert call ${measureTime { response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute() }}")
+            val createTime = measureTime { response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute() }
+            createTimes.add(createTime.inWholeMilliseconds)
+            println("Create concert call $createTime")
 
             utils.checkValidity(response)
 
             val concertId = response.body()!!.string()
 
-            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
+            val getConcertTime = measureTime { response = api.getConcerts().execute() }
+            getConcertTimes.add(getConcertTime.inWholeMilliseconds)
+            println("Get concerts call $getConcertTime")
+
             utils.checkValidity(response)
             assert(utils.containsValue(utils.getJsonArray(response), "id", concertId))
         }
@@ -35,7 +56,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
         val timeTaken = measureTime {
             var response : Response<ResponseBody>
 
-            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
+            val getConcertTime = measureTime { response = api.getConcerts().execute() }
+            getConcertTimes.add(getConcertTime.inWholeMilliseconds)
+            println("Get concerts call $getConcertTime")
             utils.checkValidity(response)
 
             val concerts = utils.getJsonArray(response)
@@ -45,7 +68,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val concertObj = concerts.getJSONObject((0..<concerts.length()).random())
             val concertId = concertObj.getString("id")
 
-            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
+            var getFreeSeatsTime = measureTime { response = api.getFreeSeats(concertId).execute() }
+            getFreeSeatsTimes.add(getFreeSeatsTime.inWholeMilliseconds)
+            println("Get free seats call $getFreeSeatsTime")
             utils.checkValidity(response)
 
             val seats = utils.getJsonArray(response)
@@ -58,14 +83,20 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val seat = seatObj.getInt("seat")
             val username = utils.generateUsername()
 
-            println("Reserve seat call ${measureTime { response = api.reserveSeat(concertId, row, seat, username).execute() }}")
+            val reserveSeatTime = measureTime { response = api.reserveSeat(concertId, row, seat, username).execute() }
+            reserveTimes.add(reserveSeatTime.inWholeMilliseconds)
+            println("Reserve seat call $reserveSeatTime")
             utils.checkValidity(response)
 
-            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
+            val getMySeatsTime = measureTime { response = api.getMySeats(concertId, username).execute() }
+            getMySeatsTimes.add(getMySeatsTime.inWholeMilliseconds)
+            println("Get my seats call $getMySeatsTime")
             utils.checkValidity(response)
             assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
-            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
+            getFreeSeatsTime = measureTime { response = api.getFreeSeats(concertId).execute() }
+            getFreeSeatsTimes.add(getFreeSeatsTime.inWholeMilliseconds)
+            println("Get free seats call $getFreeSeatsTime")
             utils.checkValidity(response)
             assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
         }
@@ -77,7 +108,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
         val timeTaken = measureTime {
             var response : Response<ResponseBody>
 
-            println("Get concerts call ${measureTime { response = api.getConcerts().execute() }}")
+            val getConcertTime = measureTime { response = api.getConcerts().execute() }
+            getConcertTimes.add(getConcertTime.inWholeMilliseconds)
+            println("Get concerts call $getConcertTime")
             utils.checkValidity(response)
 
             val concerts = utils.getJsonArray(response)
@@ -89,7 +122,9 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
             val username = utils.generateUsername()
 
-            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
+            var getMySeatsTime = measureTime { response = api.getMySeats(concertId, username).execute() }
+            getMySeatsTimes.add(getMySeatsTime.inWholeMilliseconds)
+            println("Get my seats call $getMySeatsTime")
             utils.checkValidity(response)
 
             val reservations = utils.getJsonArray(response)
@@ -100,14 +135,20 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
             val row = reservationObj.getInt("row")
             val seat = reservationObj.getInt("seat")
 
-            println("Release seat call ${measureTime { response = api.releaseSeat(concertId, row, seat, username).execute() }}")
+            val releaseTime = measureTime { response = api.releaseSeat(concertId, row, seat, username).execute() }
+            releaseTimes.add(releaseTime.inWholeMilliseconds)
+            println("Release seat call $releaseTime")
             utils.checkValidity(response)
 
-            println("Get my seats call ${measureTime { response = api.getMySeats(concertId, username).execute() }}")
+            getMySeatsTime = measureTime { response = api.getMySeats(concertId, username).execute() }
+            getMySeatsTimes.add(getMySeatsTime.inWholeMilliseconds)
+            println("Get my seats call $getMySeatsTime")
             utils.checkValidity(response)
             assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
-            println("Get free seats call ${measureTime { response = api.getFreeSeats(concertId).execute() }}")
+            val getFreeSeatsTime = measureTime { response = api.getFreeSeats(concertId).execute() }
+            getFreeSeatsTimes.add(getFreeSeatsTime.inWholeMilliseconds)
+            println("Get free seats call $getFreeSeatsTime")
             utils.checkValidity(response)
             assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
         }
@@ -158,8 +199,12 @@ fun main(args : Array<String>){
             reserveJobs.forEach { it.join() }
             releaseJobs.forEach { it.join() }
             createJobs.forEach { it.join() }
+
+            tst.printStats()
         }
     }
 
     println("Whole operation took ${timeTaken}")
+
+
 }
