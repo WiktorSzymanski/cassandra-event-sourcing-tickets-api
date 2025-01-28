@@ -45,16 +45,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String, private va
 
     fun createConcert() {
         val timeTaken = measureTime {
-            var response : Response<ResponseBody>
-
-            val createTime = measureTime { response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute() }
-            createTimes.add(createTime.inWholeMilliseconds)
-
-            if (printSpam)
-                println("Create concert call $createTime")
-
-            utils.checkValidity(response)
-
+            var response = createConcert_priv()
             val concertId = response.body()!!.string()
 
             response = getConcert()
@@ -86,13 +77,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String, private va
             val seat = seatObj.getInt("seat")
             val username = utils.generateUsername()
 
-            val reserveSeatTime = measureTime { response = api.reserveSeat(concertId, row, seat, username).execute() }
-            reserveTimes.add(reserveSeatTime.inWholeMilliseconds)
-
-            if (printSpam)
-                println("Reserve seat call $reserveSeatTime")
-            utils.checkValidity(response)
-
+            reserveSeat(concertId, row, seat, username)
             response = getMySeats(concertId, username)
             assert(utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
@@ -125,13 +110,7 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String, private va
             val row = reservationObj.getInt("row")
             val seat = reservationObj.getInt("seat")
 
-            val releaseTime = measureTime { response = api.releaseSeat(concertId, row, seat, username).execute() }
-            releaseTimes.add(releaseTime.inWholeMilliseconds)
-
-            if (printSpam)
-                println("Release seat call $releaseTime")
-            utils.checkValidity(response)
-
+            releaseSeat(concertId, row, seat, username)
             response = getMySeats(concertId, username)
             assert(!utils.containsValues(utils.getJsonArray(response), "row", row, "seat", seat))
 
@@ -141,6 +120,42 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String, private va
 
         if (printSpam)
             println("Release test $timeTaken")
+    }
+
+    private fun releaseSeat(concertId: String, row: Int, seat: Int, username: String) {
+        val response : Response<ResponseBody>
+
+        val releaseTime = measureTime { response = api.releaseSeat(concertId, row, seat, username).execute() }
+        releaseTimes.add(releaseTime.inWholeMilliseconds)
+
+        if (printSpam)
+            println("Release seat call $releaseTime")
+        utils.checkValidity(response)
+    }
+
+    private fun reserveSeat(concertId: String, row: Int, seat: Int, username: String) {
+        val response : Response<ResponseBody>
+
+        val reserveSeatTime = measureTime { response = api.reserveSeat(concertId, row, seat, username).execute() }
+        reserveTimes.add(reserveSeatTime.inWholeMilliseconds)
+
+        if (printSpam)
+            println("Reserve seat call $reserveSeatTime")
+        utils.checkValidity(response)
+    }
+
+    private fun createConcert_priv() : Response<ResponseBody> {
+        val response : Response<ResponseBody>
+
+        val createTime = measureTime { response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute() }
+        createTimes.add(createTime.inWholeMilliseconds)
+
+        if (printSpam)
+            println("Create concert call $createTime")
+
+        utils.checkValidity(response)
+
+        return response
     }
 
     private fun getFreeSeats(concertId: String): Response<ResponseBody> {
