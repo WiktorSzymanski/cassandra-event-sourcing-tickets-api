@@ -188,6 +188,7 @@ fun main(args : Array<String>){
     if (args.size < 5){
         println("Wrong number of arguments!")
         println("Needed arguments in order: apiAddress numberOfEventsToCreate numberOfSeatReservations numberOfSeatReleases shouldSpamTheConsole" )
+        println("Example config: http://localhost:8080 1 300 20 true" )
         return
     }
 
