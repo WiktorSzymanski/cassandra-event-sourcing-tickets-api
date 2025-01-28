@@ -1,0 +1,16 @@
+services:
+  cassandra:
+    container_name: rbd-cassandra
+    image: cassandra:latest
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_USER=admin
+      - CASSANDRA_PASSWORD=admin
+      - CASSANDRA_CLUSER_NAME=RBD
+      - CASSANDRA_DC=DC1-RBD
+      - CASSANDRA_RACK=Rack1-RBD
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+volumes:
+  cassandra-data:
