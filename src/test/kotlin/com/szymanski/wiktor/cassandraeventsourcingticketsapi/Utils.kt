@@ -6,7 +6,7 @@ import retrofit2.Response
 
 class Utils {
     fun generateUsername(): String {
-        val usernames = arrayListOf<String>("Ed", "Ted", "Zed", "Boris", "Michael", "John", "Paul", "Stephen", "Jimmy",
+        val usernames = arrayListOf("Ed", "Ted", "Zed", "Boris", "Michael", "John", "Paul", "Stephen", "Jimmy",
             "Tommy", "Frank", "Michelle", "Amy", "Angelica", "Anastasia", "Martha", "Jolene", "Crystal", "Donald", "Rudolph",
             "Peter", "Meg", "Louise", "Chris", "Brian", "Meg", "Homer", "Bart", "Lisa", "Marge", "Philip", "Hubert")
 
@@ -31,17 +31,6 @@ class Utils {
         return false
     }
 
-    fun containsValue(json : JSONArray, key : String, value : Int) : Boolean {
-        for (i in 0 until json.length()){
-            val obj = json.getJSONObject(i)
-            if (obj.has(key) and (obj.getInt(key) == value)) {
-                return true
-            }
-        }
-
-        return false
-    }
-
     fun containsValues(json : JSONArray, key1 : String, value1 : Int, key2 : String, value2 : Int) : Boolean {
         for (i in 0 until json.length()){
             val obj = json.getJSONObject(i)
@@ -58,10 +47,10 @@ class Utils {
     }
 
     fun generateEventName(): String {
-        val genres = arrayListOf<String>("Metal", "Rock", "Jazz", "Classical", "Punk", "HipHop", "Techno", "Electro",
+        val genres = arrayListOf("Metal", "Rock", "Jazz", "Classical", "Punk", "HipHop", "Techno", "Electro",
             "Blues", "Pop", "Indie")
 
-        val events = arrayListOf<String>("Concert", "Festival", "Recital", "Battle", "Sing-along", "Performance",
+        val events = arrayListOf("Concert", "Festival", "Recital", "Battle", "Sing-along", "Performance",
             "Gig", "Jam session", "Show")
 
         return generateUsername() + "s' " +
