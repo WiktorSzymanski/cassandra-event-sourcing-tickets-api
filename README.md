@@ -16,15 +16,15 @@ Znajduje się ona w katalogu test.
 Projekt bazy danych zakłada architekturę [Event Store](https://en.wikipedia.org/wiki/Event_store).
 
 
-## Wymagania:
+## Wymagania
 
-Zainstalowany docker
+Zainstalowany docker [instrukcje tutaj](https://docs.docker.com/engine/install/)
 
-Zainstalowany docker-compose
+Zainstalowane narzędzie docker-compose [instrukcje tutaj](https://docs.docker.com/compose/install/)
 
 
 
-## Uruchamianie poda z bazą danych:
+## Uruchamianie poda z bazą danych
 (pliki z konfiguracją znajdują się src/main/resources)
 
 ```
