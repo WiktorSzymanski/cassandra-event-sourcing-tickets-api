@@ -4,7 +4,7 @@
 
 Projekt powstał na przedmiot Systemy Rozproszone Dużej Skali na Politechnice Poznańskiej w semestrze zimowym 2025.
 Za jego stworzenie odpowiedzialni byli [Wiktor Szymański](https://github.com/WiktorSzymanski) oraz 
-[Jan Metzler](https://github.com/JanMetz). Prowadzącym przedmiotu był [Doktor Tadeusz Kobus](https://pl.linkedin.com/in/tkobus).
+[Jan Metzler](https://github.com/JanMetz). Prowadzącym przedmiotu był [doktor inżynier Tadeusz Kobus](https://pl.linkedin.com/in/tkobus).
 
 Jego celem było stworzenie aplikacji, która korzystałaby z rozproszonego systemu baz danych Cassandra.
 
