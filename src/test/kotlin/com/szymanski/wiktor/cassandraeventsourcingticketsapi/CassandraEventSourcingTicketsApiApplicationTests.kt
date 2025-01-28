@@ -20,12 +20,27 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
     private val getMySeatsTimes : MutableList<Long> = mutableListOf()
 
     fun printStats(){
-        println("Get my seats call response times [ms] avg ${getMySeatsTimes.average()}, min ${getMySeatsTimes.min()}, max ${getMySeatsTimes.max()}")
-        println("Get free seats call response times [ms] avg ${getFreeSeatsTimes.average()}, min ${getFreeSeatsTimes.min()}, max ${getFreeSeatsTimes.max()}")
-        println("Get concert call response times [ms] avg ${getConcertTimes.average()}, min ${getConcertTimes.min()}, max ${getConcertTimes.max()}")
-        println("Create concert times call response times [ms] avg ${createTimes.average()}, min ${createTimes.min()}, max ${createTimes.max()}")
-        println("Release a seat call response times [ms] avg ${releaseTimes.average()}, min ${releaseTimes.min()}, max ${releaseTimes.max()}")
-        println("Reserve a seat call response times [ms] avg ${reserveTimes.average()}, min ${reserveTimes.min()}, max ${reserveTimes.max()}")
+        sortTimesLists()
+        printListStats("Get my seats", getMySeatsTimes)
+        printListStats("Get free seats", getFreeSeatsTimes)
+        printListStats("Get concert", getConcertTimes)
+        printListStats("Create concert", createTimes)
+        printListStats("Release a seat", releaseTimes)
+        printListStats("Reserve a seat", reserveTimes)
+    }
+
+    private fun sortTimesLists() {
+        releaseTimes.sort()
+        reserveTimes.sort()
+        createTimes.sort()
+        getConcertTimes.sort()
+        getFreeSeatsTimes.sort()
+        getMySeatsTimes.sort()
+    }
+
+    private fun printListStats(title : String, list : MutableList<Long>){
+        println("$title response times [ms] avg ${list.average()}, min ${list.min()}, max ${list.max()}, " +
+                "Q1 ${list[list.size/4]}, Q2 ${list[list.size/2]}, Q3 ${list[list.size/2 + list.size/4]}")
     }
 
     fun createConcert() {
