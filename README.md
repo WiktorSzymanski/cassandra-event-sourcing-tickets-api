@@ -2,7 +2,7 @@
 
 ## Opis
 
-Projekt powstał na przedmiot Systemy Rozproszone Dużej Skali na Politechnice Poznańskiej w semestrze zimowym 2025.
+Projekt powstał na przedmiot Systemy Rozproszone Dużej Skali na Politechnice Poznańskiej w semestrze zimowym 2024/2025.
 Za jego stworzenie odpowiedzialni byli [Wiktor Szymański](https://github.com/WiktorSzymanski) oraz 
 [Jan Metzler](https://github.com/JanMetz). Prowadzącym przedmiotu był [doktor inżynier Tadeusz Kobus](https://pl.linkedin.com/in/tkobus).
 
@@ -77,6 +77,10 @@ Whole operation took 22.920915257s
 
 Process finished with exit code 0
 ```
+
+Program do testów w trakcie swojego działania zbiera czasy potrzebne na wykonanie poszczególnych requestów, a następnie,
+na koniec działania, wyświetla statystyki - średni czas obsługi requestu, minimalny czas obsługi, maksymalny czas obsługi
+oraz [kwartyle](https://pl.wikipedia.org/wiki/Kwartyl).
 
 
 
