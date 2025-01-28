@@ -8,13 +8,8 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     private val utils = Utils()
 
-    private val apiAddr : String
-    private val api : TicketsAPI
-
-    init{
-        this.apiAddr = addr
-        this.api = TicketsAPI.create(apiAddr)
-    }
+    private val apiAddr : String = addr
+    private val api : TicketsAPI = TicketsAPI.create(apiAddr)
 
     fun createConcert() {
         var response = api.createConcert(utils.generateEventName(), (5..25).random(), (10..100).random()).execute()
@@ -107,6 +102,12 @@ fun main(args : Array<String>){
         println("Needed arguments in order: apiAddress numberOfEventsToCreate numberOfSeatReservations numberOfSeatReleases" )
         return
     }
+
+    println("Running with configuration: " +
+            "\n apiAddr = ${args[0]} " +
+            "\n number of create jobs = ${args[1]} " +
+            "\n number of seat reservations = ${args[2]} " +
+            "\n number of seat releases = ${args[3]}")
 
     runBlocking {
         val tst = CassandraEventSourcingTicketsApiApplicationTests(args[0])

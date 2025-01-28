@@ -21,9 +21,6 @@ interface TicketsAPI {
     @GET("/concert/{id}/my_seats/{username}")
     fun getMySeats(@Path("id") id : String, @Path("username") username: String): Call<ResponseBody>
 
-    @GET("/reservations/{username}")
-    fun getUsersReservations(@Path("username") uname : String): Call<ResponseBody>
-
     @FormUrlEncoded
     @POST("/concerts")
     fun createConcert(@Field("name") name : String,
