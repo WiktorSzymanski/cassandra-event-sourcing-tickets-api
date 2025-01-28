@@ -48,15 +48,16 @@ docker exec -it rbd-cassandra cqlsh -f /etc/db-schema.cql
 ## Argumenty do uruchomienia programu do testów
 W kolejności:
 
-Adres, na którym pracuje serwer
+Adres, na którym pracuje serwer (wraz z portem)
 
-Ilość koncertów, które chcemy utworzyć
+Ilość koncertów, które chcemy utworzyć (liczba całkowita, nieujemna)
 
-Ilość rezerwacji, które chcemy zasymulować
+Ilość rezerwacji, które chcemy zasymulować (liczba całkowita, nieujemna)
 
-Ilość anulacji rezerwacji, które chcemy zasymulować 
+Ilość anulacji rezerwacji, które chcemy zasymulować (liczba całkowita, nieujemna)
 
-Czy na konsolę mają być wypisywane wszystkie czasy przetwarzania czy nie (podsumowanie i statystyki wyświetlane są zawsze)
+Czy na konsolę mają być wypisywane wszystkie czasy przetwarzania czy nie (true/false).
+Podsumowanie i statystyki wyświetlane są zawsze. 
 
 ## Przykładowy wynik działania programu do testów
 
