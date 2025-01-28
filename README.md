@@ -8,11 +8,12 @@ Za jego stworzenie odpowiedzialni byli [Wiktor Szymański](https://github.com/Wi
 
 Jego celem było stworzenie aplikacji, która korzystałaby z rozproszonego systemu baz danych Cassandra.
 
-Projekt składa się z dwóch części - pierwsza, napisana w SpringBoot to część serwerowa, obsługująca requesty klientów 
-i komunikująca się z bazą danych. Znajduje się ona w katalogu main. Druga część to prosty klient, używany do testowania 
-poprawności implementacji oraz testów obciążeniowych. Znajduje się ona w katalogu test.
+Projekt składa się z dwóch części - pierwsza, napisana w SpringBoot, to część serwerowa, obsługująca requesty klientów 
+i komunikująca się z bazą danych. Znajduje się ona w katalogu main. Druga część to prosty klient napisany z wykorzystaniem
+frameworku Retrofit, używany do testowania poprawności implementacji oraz testów obciążeniowych. 
+Znajduje się ona w katalogu test.
 
-Projekt bazy danych zakłada architekturę [Event Store](https://en.wikipedia.org/wiki/Event_store)
+Projekt bazy danych zakłada architekturę [Event Store](https://en.wikipedia.org/wiki/Event_store).
 
 
 ## Wymagania:
