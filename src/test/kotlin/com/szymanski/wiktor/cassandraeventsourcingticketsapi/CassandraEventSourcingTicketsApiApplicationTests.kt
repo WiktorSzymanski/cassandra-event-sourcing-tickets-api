@@ -3,6 +3,7 @@ package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.lang.Thread.sleep
+import kotlin.time.measureTime
 
 class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
@@ -108,32 +109,36 @@ fun main(args : Array<String>){
             "\n number of seat reservations = ${args[2]} " +
             "\n number of seat releases = ${args[3]}")
 
-    runBlocking {
-        val tst = CassandraEventSourcingTicketsApiApplicationTests(args[0])
-        val createJobs = List(args[1].toInt()) {
-            launch {
-                tst.createConcert()
+    val timeTaken = measureTime {
+        runBlocking {
+            val tst = CassandraEventSourcingTicketsApiApplicationTests(args[0])
+            val createJobs = List(args[1].toInt()) {
+                launch {
+                    tst.createConcert()
+                }
             }
-        }
 
-        sleep(2000)
+            sleep(2000)
 
-        val reserveJobs = List(args[2].toInt()) {
-            launch {
-                tst.reserveSeat()
+            val reserveJobs = List(args[2].toInt()) {
+                launch {
+                    tst.reserveSeat()
+                }
             }
-        }
 
-        sleep(15000)
+            sleep(15000)
 
-        val releaseJobs = List(args[3].toInt()) {
-            launch {
-                tst.releaseSeat()
+            val releaseJobs = List(args[3].toInt()) {
+                launch {
+                    tst.releaseSeat()
+                }
             }
-        }
 
-        reserveJobs.forEach { it.join() }
-        releaseJobs.forEach { it.join() }
-        createJobs.forEach { it.join() }
+            reserveJobs.forEach { it.join() }
+            releaseJobs.forEach { it.join() }
+            createJobs.forEach { it.join() }
+        }
     }
+
+    println("Operation took ${timeTaken}")
 }
