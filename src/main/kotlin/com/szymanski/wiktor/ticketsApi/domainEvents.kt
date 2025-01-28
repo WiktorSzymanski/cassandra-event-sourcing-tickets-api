@@ -11,6 +11,10 @@ sealed interface ArenaCompensationEvent : ArenaDomainEvent {
     val compensatesEventId: UUID
 }
 
+sealed interface ArenaSnapshotEvent : ArenaDomainEvent {
+    val snapshotId: UUID
+}
+
 data class ArenaPreparedEvent(
     override val id: UUID,
     override val version: Int,
@@ -45,3 +49,9 @@ class SeatReleasedCompensationEvent(
     override val version: Int,
     override val compensatesEventId: UUID,
 ) : ArenaCompensationEvent
+
+class SnapshotEvent(
+    override val id: UUID,
+    override val version: Int,
+    override val snapshotId: UUID,
+) : ArenaSnapshotEvent

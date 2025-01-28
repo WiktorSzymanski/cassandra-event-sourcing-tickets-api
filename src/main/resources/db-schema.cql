@@ -4,14 +4,19 @@ USE tickets_api;
 
 CREATE TABLE arena_event_store (
     arena_id UUID,
-    time_stamp text,
-    event_type text,
-    event_data text,
-    PRIMARY KEY (arena_id, time_stamp)
+    timestamp text,
+    eventtype text,
+    eventdata text,
+    PRIMARY KEY (arena_id, timestamp)
 );
 
 CREATE TABLE concerts (
     id text PRIMARY KEY,
     name text,
     arena_id UUID
+);
+
+CREATE TABLE snapshot (
+    snapshot_id UUID PRIMARY KEY,
+    seatsdata text
 );
