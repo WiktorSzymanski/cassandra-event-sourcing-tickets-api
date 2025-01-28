@@ -1,5 +1,6 @@
 package com.szymanski.wiktor.ticketsApi
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -7,6 +8,9 @@ import java.util.*
 class ArenaRepo(
     private val eventStore: EventStore
 ) {
+    @Value("\${snapshot.config.per-number-of-events}")
+    var snapshotPerNEvents: Int = 0
+
     fun load(id: UUID): Arena {
         val (arena, timestamp) = eventStore.getArenaSnapshot(id)
         val events: List<ArenaDomainEvent> = if (timestamp == "") eventStore.loadEvents(id) else eventStore.loadEventsFromTimestamp(id, timestamp)
@@ -15,7 +19,7 @@ class ArenaRepo(
             val compensationEvent = arena.compensate(it)
             eventStore.saveEvent(id, compensationEvent)
         }
-        if (events.size > 10) eventStore.saveEvent(id, arena.snapshot()).let { eventStore.createSnapshot(id, it) }
+        if (events.size > snapshotPerNEvents) eventStore.saveEvent(id, arena.snapshot()).let { eventStore.createSnapshot(id, it) }
         return arena
     }
 
