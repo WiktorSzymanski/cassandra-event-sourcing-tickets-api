@@ -25,6 +25,7 @@ Zainstalowany docker-compose
 
 
 ## Uruchamianie poda z bazą danych:
+(pliki z konfiguracją znajdują się src/main/resources)
 
 ```
 docker compose -f "cassandra-node-compose.yaml" up -d
