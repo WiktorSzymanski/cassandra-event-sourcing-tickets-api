@@ -5,7 +5,6 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.lang.Thread.sleep
-import kotlin.time.Duration
 import kotlin.time.measureTime
 
 class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
@@ -21,12 +20,12 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
     private val getMySeatsTimes : MutableList<Long> = mutableListOf()
 
     fun printStats(){
-        println("Get my seats avg ${getMySeatsTimes.average()}")
-        println("Get free seats avg ${getFreeSeatsTimes.average()}")
-        println("Get concert avg ${getConcertTimes.average()}")
-        println("Create concert times avg ${createTimes.average()}")
-        println("Release a seat avg ${releaseTimes.average()}")
-        println("Reserve a seat avg ${reserveTimes.average()}")
+        println("Get my seats avg ${getMySeatsTimes.average()}, min ${getMySeatsTimes.min()}, max ${getMySeatsTimes.max()}")
+        println("Get free seats avg ${getFreeSeatsTimes.average()}, min ${getFreeSeatsTimes.min()}, max ${getFreeSeatsTimes.max()}")
+        println("Get concert avg ${getConcertTimes.average()}, min ${getConcertTimes.min()}, max ${getConcertTimes.max()}")
+        println("Create concert times avg ${createTimes.average()}, min ${createTimes.min()}, max ${createTimes.max()}")
+        println("Release a seat avg ${releaseTimes.average()}, min ${releaseTimes.min()}, max ${releaseTimes.max()}")
+        println("Reserve a seat avg ${reserveTimes.average()}, min ${reserveTimes.min()}, max ${reserveTimes.max()}")
     }
 
     fun createConcert() {
