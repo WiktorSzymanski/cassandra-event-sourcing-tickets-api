@@ -1,6 +1,5 @@
 package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 
-import io.swagger.v3.oas.annotations.Parameter
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -11,9 +10,6 @@ interface TicketsAPI {
 
     @GET("/concerts")
     fun getConcerts(): Call<ResponseBody>
-
-    @GET("/concert/{id}")
-    fun getConcert(@Path("id") id : String): Call<ResponseBody>
 
     @GET("/concert/{id}/free_seats")
     fun getFreeSeats(@Path("id") id : String): Call<ResponseBody>

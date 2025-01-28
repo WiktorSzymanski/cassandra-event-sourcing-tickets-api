@@ -7,7 +7,6 @@ import java.lang.Thread.sleep
 class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
     private val utils = Utils()
-
     private val apiAddr : String = addr
     private val api : TicketsAPI = TicketsAPI.create(apiAddr)
 
