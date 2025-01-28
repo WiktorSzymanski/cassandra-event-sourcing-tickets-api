@@ -2,6 +2,7 @@ package com.szymanski.wiktor.cassandraeventsourcingticketsapi
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.lang.Thread.sleep
 
 class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
@@ -101,27 +102,31 @@ class CassandraEventSourcingTicketsApiApplicationTests(addr : String) {
 
 fun main(args : Array<String>){
 
-    if (args.size < 5){
+    if (args.size < 4){
         println("Wrong number of arguments!")
         println("Needed arguments in order: apiAddress numberOfEventsToCreate numberOfSeatReservations numberOfSeatReleases" )
         return
     }
 
     runBlocking {
-        val tst = CassandraEventSourcingTicketsApiApplicationTests(args[1])
-        val createJobs = List(args[2].toInt()) {
+        val tst = CassandraEventSourcingTicketsApiApplicationTests(args[0])
+        val createJobs = List(args[1].toInt()) {
             launch {
                 tst.createConcert()
             }
         }
 
-        val reserveJobs = List(args[3].toInt()) {
+        sleep(2000)
+
+        val reserveJobs = List(args[2].toInt()) {
             launch {
                 tst.reserveSeat()
             }
         }
 
-        val releaseJobs = List(args[4].toInt()) {
+        sleep(15000)
+
+        val releaseJobs = List(args[3].toInt()) {
             launch {
                 tst.releaseSeat()
             }
