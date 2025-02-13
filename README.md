@@ -17,13 +17,18 @@ Projekt bazy danych zakłada architekturę [Event Store](https://en.wikipedia.or
 
 ## Architektura bazy danych
 
-Główną tabelą jest ```arena_event_store```, która pełni rolę event store'a. Jej kluczem są id koncertu oraz timestamp 
-wydarzenia.
+Główną tabelą jest ```arena_event_store```, która pełni rolę event store'a. Jej kluczem są id areny, na której odbywa 
+się koncert oraz timestamp eventu. Dodatkowo przechowuje ona dane takie jak: typ eventu (które w ogólności można podzielić
+na pierwotne i kompensujące) oraz dane eventu (takie jak np. szczegóły zarezerwowanego w ramach eventu miejsca).
 
-Dane o koncertach przechowywane są w tabeli ```concerts```, której kluczem głównym jest id koncertu.
+Dane o koncertach przechowywane są w tabeli ```concerts```, której kluczem głównym jest id koncertu. Oprócz tego 
+tabela przechowuje też nazwę koncertu oraz id areny, na której się odbywa.
 
 Dodatkowo w bazie występuje tabela ```snapshot```, która przechowuje podsumowania eventów z tabeli event_store w celu
-zwiększenia efektywności działania systemu.  
+zwiększenia efektywności działania systemu. Jej kluczem głównym jest id snapshotu. Dodatkowo tabela przechowuje dane o 
+zajętych siedzeniach.
+
+Replikację w bazie ustawiliśmy za pomocą parametrów class=SimpleStrategy oraz replication_factor=2.
 
 
 ## Wymagania
