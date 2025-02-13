@@ -28,7 +28,8 @@ Dodatkowo w bazie występuje tabela ```snapshot```, która przechowuje stan aren
 Mechanizm snapshotów jest zastosowany w celu zwiększenia efektywności działania systemu - aby uzyskać aktualny obraz 
 nie trzeba przetwarzać wszystkich eventów od początku tylko wystarczy załadować snapshot oraz przetworzyć wszystkie eventy, 
 które miały miejsce po jego utworzenu. Kluczem głównym tabeli jest id snapshotu. Dodatkowo tabela przechowuje dane o 
-zajętych siedzeniach.
+zajętych siedzeniach. Utworzenie snapshotu samo w sobie też jest eventem przechowywanym w arena_event_store - dobieranie
+eventów, które miały miejsce po ujęciu snapshotu wymaga więc jedynie przeszukania tabeli event_store.
 
 Replikację w bazie ustawiliśmy za pomocą parametrów class=SimpleStrategy oraz replication_factor=2.
 
