@@ -13,7 +13,7 @@ i komunikująca się z bazą danych. Znajduje się ona w katalogu main. Druga cz
 frameworku Retrofit, używany do testowania poprawności implementacji oraz testów obciążeniowych. 
 Znajduje się ona w katalogu test.
 
-Projekt bazy danych zakłada architekturę [Event Store](https://en.wikipedia.org/wiki/Event_store).
+Aplikacja korzysta z wzorca architektonicznego Event Sourcing, a baza danych pełni rolę [Event Store'a](https://en.wikipedia.org/wiki/Event_store).
 
 ## Architektura bazy danych
 
@@ -24,8 +24,10 @@ na pierwotne i kompensujące) oraz dane eventu (takie jak np. szczegóły zareze
 Dane o koncertach przechowywane są w tabeli ```concerts```, której kluczem głównym jest id koncertu. Oprócz tego 
 tabela przechowuje też nazwę koncertu oraz id areny, na której się odbywa.
 
-Dodatkowo w bazie występuje tabela ```snapshot```, która przechowuje podsumowania eventów z tabeli event_store w celu
-zwiększenia efektywności działania systemu. Jej kluczem głównym jest id snapshotu. Dodatkowo tabela przechowuje dane o 
+Dodatkowo w bazie występuje tabela ```snapshot```, która przechowuje stan areny wywnioskowany na podstawie tabeli event_store.
+Mechanizm snapshotów jest zastosowany w celu zwiększenia efektywności działania systemu - aby uzyskać aktualny obraz 
+nie trzeba przetwarzać wszystkich eventów od początku tylko wystarczy załadować snapshot oraz przetworzyć wszystkie eventy, 
+które miały miejsce po jego utworzenu. Kluczem głównym tabeli jest id snapshotu. Dodatkowo tabela przechowuje dane o 
 zajętych siedzeniach.
 
 Replikację w bazie ustawiliśmy za pomocą parametrów class=SimpleStrategy oraz replication_factor=2.
